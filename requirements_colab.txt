@@ -1,0 +1,11 @@
+imgaug==0.4
+tqdm
+pascal_voc_writer
+tf2onnx
+flask==0.12.2
+eventlet==0.17.4
+gunicorn==18.0.0
+simple-websocket
+flask-socketio
+flask_cors
+gdown
