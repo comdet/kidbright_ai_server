@@ -9,3 +9,4 @@ simple-websocket
 flask-socketio
 flask_cors
 gdown
+werkzeug==0.16.1
