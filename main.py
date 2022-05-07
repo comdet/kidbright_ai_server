@@ -36,7 +36,7 @@ report_task = None
 
 app = Flask(__name__)
 #Set this argument to``'*'`` to allow all origins, or to ``[]`` to disable CORS handling.
-CORS(app,resources={r"/*":{"origins":"*"}})
+CORS(app,resources={r"/*":{"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins = "*")
 
 @app.route('/', methods=["GET"])
