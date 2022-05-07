@@ -6,7 +6,7 @@ matplotlib~=3.3
 tqdm
 pascal_voc_writer
 tf2onnx
-flask
-flask-socketio
-flask_cors
+flask==1.1.1
+flask-socketio==4.3.1
+flask_cors==3.0.10
 gdown
