@@ -4,10 +4,11 @@ from tensorflow.keras import backend as K
 import time
 
 class ReportCallback(keras.callbacks.Callback):
-    def __init__(self, q, sleep = None):
+    def __init__(self, q, sleep = None, save_on_epoch_end = True):
         super(ReportCallback, self).__init__()
         self.q = q
         self.sleep = sleep
+        self.save_on_epoch_end = save_on_epoch_end
         
     def on_train_begin(self, logs=None):
         self.q.put({"time":time.time(), "event": "train_begin", "msg" : "Start training"})
@@ -26,10 +27,11 @@ class ReportCallback(keras.callbacks.Callback):
             self.sleep.sleep(0)
         
     def on_epoch_end(self, epoch, logs=None):
-        self.q.put({"time":time.time(), "event": "epoch_end", "msg" : "End epoch", "epoch" : epoch, "matric" : logs})
-        if self.sleep:
-            self.sleep.sleep(0)
-        
+        if self.save_on_epoch_end:
+            self.q.put({"time":time.time(), "event": "epoch_end", "msg" : "End epoch", "epoch" : epoch, "matric" : logs})
+            if self.sleep:
+                self.sleep.sleep(0)
+            
     def on_test_begin(self, logs=None):
         self.q.put({"time":time.time(), "event": "test_begin", "msg" : "Start testing"})
         if self.sleep:

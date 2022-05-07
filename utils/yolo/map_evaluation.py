@@ -1,4 +1,4 @@
-import os
+import os, time
 import tensorflow as tf
 import numpy as np
 import tensorflow.keras
@@ -24,7 +24,8 @@ class MapEvaluation(tensorflow.keras.callbacks.Callback):
                  period=1,
                  save_best=False,
                  save_name=None,
-                 tensorboard=None):
+                 tensorboard=None,
+                 report_queue=None):
                  
         super().__init__()
         self._yolo = yolo
@@ -36,6 +37,8 @@ class MapEvaluation(tensorflow.keras.callbacks.Callback):
         self._save_best = save_best
         self._save_name = save_name
         self._tensorboard = tensorboard
+
+        self._report_queue = report_queue
 
         self.loss = [0]
         self.val_loss = [0]
@@ -56,6 +59,7 @@ class MapEvaluation(tensorflow.keras.callbacks.Callback):
 
             if epoch == 0:
                 print("Saving model on first epoch irrespective of mAP")
+                #self._report_queue.put({"time":time.time(), "event": "initial", "msg" : f"Saving model on first epoch irrespective of mAP"})
                 self.model.save(self._save_name,overwrite=True,include_optimizer=False)
             else:
                 if self._save_best and self._save_name is not None and _map > self.bestMap:
@@ -65,6 +69,9 @@ class MapEvaluation(tensorflow.keras.callbacks.Callback):
                 else:
                     print("mAP did not improve from {}.".format(self.bestMap))
 
+            if(self._report_queue):
+                logs["mAP"] = _map
+                self._report_queue.put({"time":time.time(), "event": "epoch_end", "msg" : f"End epoch with mAP : {_map:.3f} best mAP = {self.bestMap:.3f}", "epoch" : epoch, "matric" : logs})
 
             self.loss.append(logs.get("loss"))
             self.val_loss.append(logs.get("val_loss"))

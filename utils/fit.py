@@ -101,7 +101,8 @@ def train(model,
                                      save_name=save_weights_name,
                                      iou_threshold=0.5,
                                      score_threshold=0.3,
-                                     tensorboard=tensorboard_callback)
+                                     tensorboard=tensorboard_callback,
+                                     report_queue=report_callback)
 
         callbacks = [tensorboard_callback, map_evaluator_cb, warm_up_lr]
     else:
@@ -122,7 +123,8 @@ def train(model,
         callbacks= [early_stop, checkpoint, warm_up_lr, tensorboard_callback] 
 
     if report_callback != None:
-        report_cb = ReportCallback(report_callback, callback_sleep)
+        save_on_end = False if metrics == 'mAP' else True
+        report_cb = ReportCallback(report_callback, callback_sleep, save_on_end)
         callbacks.append(report_cb)
 
     # 4. training

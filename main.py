@@ -153,10 +153,12 @@ def training_task(data, q):
                 pretrained_model_file = os.path.join(output_folder_path,"pretrained_model.h5")
                 gdown.download(input_conf["pretrained"],pretrained_model_file,quiet=False)
                 current_model.load_weights(pretrained_model_file)
+
             # stringlist = []
             # model.network.summary(print_fn=lambda x: stringlist.append(x))
             # model_summary = "\n".join(stringlist)
             # q.put({"time":time.time(), "event": "initial", "msg" : "model network : \n" + model_summary})
+            
             STAGE = 2
             current_model.train(
                 train_dataset_path,
@@ -186,7 +188,8 @@ def training_task(data, q):
             cmd_lines = cmd_code.split("\n")
 
             current_model, input_conf, output_conf, anchors = create_yolo(cmd_lines,dataset, labels)
-            
+            q.put({"time":time.time(), "event": "initial", "msg" : "model created "})
+            q.put({"time":time.time(), "event": "initial", "msg" : "anchors = " + ",".join(anchors)})
             output_folder_path = os.path.join(PROJECT_PATH, project_id, OUTPUT_FOLDER)
             shutil.rmtree(output_folder_path, ignore_errors=True)
             helper.create_not_exist(output_folder_path)
@@ -214,11 +217,8 @@ def training_task(data, q):
                 callback_q = q,
                 callback_sleep = None)
             STAGE = 3
-            q.put({"time":time.time(), "event": "train_end", "msg" : "Train ended", "matric" : None})
-            
+            q.put({"time":time.time(), "event": "train_end", "msg" : "Train ended", "matric" : None})            
             # print("finish traing")
-
-
 
     finally:
         print("Thread ended")
