@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, copy_current_request_context, jsonify, send_file
 from flask_socketio import SocketIO, send, emit
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import threading, queue
 import ctypes
 
@@ -36,8 +36,8 @@ report_task = None
 
 app = Flask(__name__)
 #Set this argument to``'*'`` to allow all origins, or to ``[]`` to disable CORS handling.
-CORS(app,resources={r"/*":{"origins": "*", "allow_headers": "*", "expose_headers": "*"}})
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins = "*")
+CORS(app)
 
 @app.route('/', methods=["GET"])
 def index():
@@ -55,6 +55,7 @@ def upload():
     return jsonify({"result":"OK"})
 
 @app.route("/sync_project", methods=["POST"])
+#@cross_origin(origin="*")
 def sync_project():
     data = request.get_json() #content = request.get_json(silent=True)
     # ======== init project =======#

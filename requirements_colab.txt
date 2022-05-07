@@ -4,6 +4,7 @@ pascal_voc_writer
 tf2onnx
 flask==0.12.2
 eventlet==0.17.4
+gunicorn==18.0.0
 flask-socketio
 python-socketio
 python-engineio==4.3.2
