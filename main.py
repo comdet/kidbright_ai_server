@@ -38,6 +38,7 @@ socketio = SocketIO(app, async_mode='threading', cors_allowed_origins = "*")
 CORS(app)
 #CRITICAL, ERROR, WARNING, INFO, DEBUG
 logging.basicConfig(level=logging.WARNING)
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 @app.route('/', methods=["GET"])
 def index():
