@@ -17,8 +17,6 @@ import gdown
 
 from keras import backend as K 
 
-#logging.basicConfig(level=logging.INFO)
-
 PROJECT_PATH = "./"
 PROJECT_FILENAME = "project.json"
 TRAIN_FOLDER = "train"
@@ -38,6 +36,8 @@ app = Flask(__name__)
 #Set this argument to``'*'`` to allow all origins, or to ``[]`` to disable CORS handling.
 socketio = SocketIO(app, async_mode='threading', cors_allowed_origins = "*")
 CORS(app)
+#CRITICAL, ERROR, WARNING, INFO, DEBUG
+logging.basicConfig(level=logging.WARNING)
 
 @app.route('/', methods=["GET"])
 def index():
@@ -189,7 +189,7 @@ def training_task(data, q):
 
             current_model, input_conf, output_conf, anchors = create_yolo(cmd_lines,dataset, labels)
             q.put({"time":time.time(), "event": "initial", "msg" : "model created "})
-            q.put({"time":time.time(), "event": "initial", "msg" : "anchors = " + ",".join(anchors)})
+            q.put({"time":time.time(), "event": "initial", "msg" : "anchors = " + ", ".join(str(el) for el in anchors)})
             output_folder_path = os.path.join(PROJECT_PATH, project_id, OUTPUT_FOLDER)
             shutil.rmtree(output_folder_path, ignore_errors=True)
             helper.create_not_exist(output_folder_path)
@@ -251,6 +251,7 @@ def terminate_training():
     global train_task, report_task, report_queue
     print("terminate current training process")
     if train_task and train_task.is_alive():
+        train_task.kill()
         kill_thread(train_task)
         print("send kill command")
     #if report_task and report_task.is_alive():
